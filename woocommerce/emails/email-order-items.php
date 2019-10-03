@@ -46,10 +46,6 @@ foreach ( $items as $item_id => $item ) :
 			if ( $show_sku && $sku ) {
 				echo wp_kses_post( ' (#' . $sku . ')' );
 			}
-			// attributs.
-			if ( $attr ) {
-				echo wp_kses_post( $attr );
-			}
 			// allow other plugins to add additional product information here.
 			do_action( 'woocommerce_order_item_meta_start', $item_id, $item, $order, $plain_text );
 			wc_display_item_meta(
