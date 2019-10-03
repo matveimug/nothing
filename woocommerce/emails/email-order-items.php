@@ -27,6 +27,7 @@ foreach ( $items as $item_id => $item ) :
 	}
 	if ( is_object( $product ) ) {
 		$sku           = $product->get_sku();
+		$attr          = $product->get_attributes();
 		$purchase_note = $product->get_purchase_note();
 		$image         = $product->get_image( $image_size );
 	}
@@ -40,9 +41,14 @@ foreach ( $items as $item_id => $item ) :
 			}
 			// Product name.
 			echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', $item->get_name(), $item, false ) );
+			echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', $item->get_name(), $item, false ) );
 			// SKU.
 			if ( $show_sku && $sku ) {
 				echo wp_kses_post( ' (#' . $sku . ')' );
+			}
+			// attributs.
+			if ( $attr ) {
+				echo wp_kses_post( $attr );
 			}
 			// allow other plugins to add additional product information here.
 			do_action( 'woocommerce_order_item_meta_start', $item_id, $item, $order, $plain_text );
