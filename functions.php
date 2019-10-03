@@ -51,7 +51,51 @@ function widgets_init() {
 }
 add_action( 'widgets_init', 'widgets_init' );
 
-function add_cors_http_header(){
-	header("Access-Control-Allow-Origin: *");
+// New order notification only for "Pending" Order status
+add_action( 'woocommerce_checkout_order_processed', 'pending_new_order_notification', 20, 1 );
+function pending_new_order_notification( $order_id ) {
+    // Get an instance of the WC_Order object
+    $order = wc_get_order( $order_id );
+
+    // Only for "pending" order status
+    if( ! $order->has_status( 'pending' ) ) return;
+
+    // Get an instance of the WC_Email_New_Order object
+    $wc_email = WC()->mailer()->get_emails()['WC_Email_New_Order'];
+
+    ## -- Customizing Heading, subject (and optionally add recipients)  -- ##
+    // Change Subject
+    $wc_email->settings['subject'] = __('{site_title} - New customer Pending order ({order_number}) - {order_date}');
+    // Change Heading
+    $wc_email->settings['heading'] = __('New customer Pending Order'); 
+    // $wc_email->settings['recipient'] .= ',name@email.com'; // Add email recipients (coma separated)
+
+    // Send "New Email" notification (to admin)
+    $wc_email->trigger( $order_id );
 }
-add_action('init','add_cors_http_header');
+
+add_filter( 'register_post_type_args', function( $args, $post_type ) {
+
+    if ( 'messages' === $post_type ) {
+        $args['show_in_graphql'] = true;
+        $args['graphql_single_name'] = 'Message';
+        $args['graphql_plural_name'] = 'Messages';
+    }
+
+    return $args;
+
+}, 10, 2 );
+
+
+add_filter( 'register_post_type_args', function( $args, $post_type ) {
+
+    if ( 'meta' === $post_type ) {
+        $args['show_in_graphql'] = true;
+        $args['graphql_single_name'] = 'Meta';
+        $args['graphql_plural_name'] = 'Metas';
+    }
+
+    return $args;
+
+}, 10, 2 );
+
